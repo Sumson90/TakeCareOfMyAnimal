@@ -2,6 +2,8 @@ package pl.takecareofmyanimal.model;
 
 import lombok.*;
 
+import lombok.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -36,6 +38,7 @@ public class User {
 
     @NotNull(message = "Email is required")
     @Email(message = "Invalid email")
+    @Column(unique = true)
     private String email;
 
     @NotNull(message = "City is required")
@@ -48,6 +51,4 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Advert> adverts = new ArrayList<>();
-
-
 }
