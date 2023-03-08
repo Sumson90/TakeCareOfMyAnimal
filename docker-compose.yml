@@ -1,0 +1,13 @@
+version: '3'
+services:
+  postgres-animals:
+    image: postgres:13.5
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: qaz
+      POSTGRES_DB: animals
+    ports:
+      - 8889:5432
+    volumes:
+      - ./postgres-animals:/postgres-animals
