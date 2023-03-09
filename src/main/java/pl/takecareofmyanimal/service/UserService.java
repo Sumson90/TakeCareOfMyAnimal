@@ -1,50 +1,68 @@
 package pl.takecareofmyanimal.service;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import pl.takecareofmyanimal.dto.UserDTO;
 import pl.takecareofmyanimal.model.User;
 import pl.takecareofmyanimal.repo.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public UserDTO getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return convertToDTO(user);
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public UserDTO createUser(UserDTO userDTO) {
+        User user = convertToEntity(userDTO);
+        user = userRepository.save(user);
+        return convertToDTO(user);
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public UserDTO updateUser(UserDTO userDTO) {
+        User user = convertToEntity(userDTO);
+        user = userRepository.save(user);
+        return convertToDTO(user);
     }
 
-    public void updateUser(Long id, User updatedUser) {
-        User existingUser = getUserById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        existingUser.setUserName(updatedUser.getUserName());
-        existingUser.setName(updatedUser.getName());
-        existingUser.setLastName(updatedUser.getLastName());
-        existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setCity(updatedUser.getCity());
-        existingUser.setPhone(updatedUser.getPhone());
-        existingUser.setAdverts(updatedUser.getAdverts());
-
-        userRepository.save(existingUser);
-    }
-
-    public void deleteUserById(Long id) {
+    public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    private UserDTO convertToDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setUserName(user.getUserName());
+        userDTO.setName(user.getName());
+        userDTO.setLastName(user.getLastName());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setCity(user.getCity());
+        userDTO.setPhone(user.getPhone());
+        return userDTO;
+    }
+
+    private User convertToEntity(UserDTO userDTO) {
+        User user = new User();
+        user.setId(userDTO.getId());
+        user.setUserName(userDTO.getUserName());
+        user.setName(userDTO.getName());
+        user.setLastName(userDTO.getLastName());
+        user.setEmail(userDTO.getEmail());
+        user.setCity(userDTO.getCity());
+        user.setPhone(userDTO.getPhone());
+        return user;
     }
 }
