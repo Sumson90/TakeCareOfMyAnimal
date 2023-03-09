@@ -18,7 +18,7 @@ import java.util.List;
 @Setter
 @ToString
 @Entity
-@Table(name = "user_app")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,5 +50,6 @@ public class User {
     private String phone;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+
     private List<Advert> adverts = new ArrayList<>();
 }
